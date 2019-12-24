@@ -12,15 +12,19 @@ const cli = meow(`
       $ eserialize <input> <input> ...
 
     Examples
-      $ eserialize 0xdeadbeef 42
-        @ 0xdeadbeef
-        0xdeadbeef 0x:number 3735928559
-        0x30786465616462656566 0x:string ޭ��
-        0xNaN 0x:date 2088-05-20T21:55:59.000Z
-        @ 42
-        0x2a 0x:number 66
-        0x3432 0x:string 
-        0x876e8b60 0x:date 1970-01-01T00:01:06.000Z
+
+    $ eserialize-cli 0xdeadbeef 61
+                    |
+                     0xdeadbeef
+                     0x:number 0xdeadbeef 3735928559
+                     0x:string 0x30786465616462656566 ޭ��
+                     0x:date   0xNaN 2088-05-20T21:55:59.000Z
+
+                               | 
+                                61
+                                0x:number 0x3d 97
+                                0x:string 0x3631 
+                                0x:date   0x-10ed1e20 1970-01-01T00:01:37.000Z
 
 `, {
     flags: {
