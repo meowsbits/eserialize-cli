@@ -52,13 +52,12 @@ var formatConversionLabel = function(label) {
 
 var handleInputHex = function(o, input) {
     // console.log(process.argv0, process.argv[0], process.argv[1], process.argv[2]);
-    o += 1;
+    o += 2;
     console.log(offset(o), "|");
-    o += 1;
-    console.log(offset(o), input);
-    console.log(offset(o), formatConversionLabel("0x:number"), ser.numberToHex(+input), ser.hexToNumber(input));
-    console.log(offset(o), formatConversionLabel("0x:string"), ser.stringToHex(input), ser.hexToString(input));
-    console.log(offset(o), formatConversionLabel("0x:date  "), ser.dateToHex(new Date(input)), ser.hexToDate(input).toISOString());
+    // console.log(offset(o), input);
+    console.log(offset(o), formatConversionLabel("0x:Number"), ser.numberToHex(+input), ser.hexToNumber(input));
+    console.log(offset(o), formatConversionLabel("0x:String"), ser.stringToHex(input), ser.hexToString(input));
+    console.log(offset(o), formatConversionLabel("0x:Date  "), ser.dateToHex(new Date(input)), ser.hexToDate(input).toISOString());
     console.log();
 }
 
