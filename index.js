@@ -25,9 +25,9 @@ const cli = meow(`
                                 0x:Date   0x876e8b60 1970-01-01T00:01:06.000Z
 `, {
     flags: {
-        rainbow: {
+        nocolor: {
             type: 'boolean',
-            alias: 'r'
+            alias: 'n'
         }
     }
 });
@@ -41,27 +41,74 @@ var offset = function(i) {
 };
 
 var formatConversionLabel = function(label) {
+    if ( cli.flags.nocolor) {
+        return label;
+    }
     var ls = label.split(":");
     var ls1 = chalk.magenta(ls[0]);
     var ls2 = chalk.cyan(ls[1]);
     return ls1 + chalk.gray(":") + ls2;
 }
 
+function formatToHex(input, output) {
+    if ( cli.flags.nocolor ) {
+        return output;
+    }
+    if (input === output) {
+        return chalk.underline(input);
+    }
+    return chalk.magenta(output);
+}
+
+function formatToVal(input, output) {
+    if ( cli.flags.nocolor ) {
+        return output;
+    }
+    return chalk.cyan(output);
+}
+
 var handleInputHex = function(o, input) {
     o += 2; // space + index0
-    console.log(offset(o), formatConversionLabel("0x:Number"), ser.numberToHex(+input), ser.hexToNumber(input));
-    console.log(offset(o), formatConversionLabel("0x:String"), ser.stringToHex(input), ser.hexToString(input));
-    console.log(offset(o), formatConversionLabel("0x:Date  "), ser.dateToHex(new Date(input)), ser.hexToDate(input).toISOString());
+    console.log();
+    console.log(offset(o), formatConversionLabel("0x:Number"), formatToHex(input, ser.numberToHex(+input)), formatToVal(input, ser.hexToNumber(input) ));
+    console.log(offset(o), formatConversionLabel("0x:String"), formatToHex(input, ser.stringToHex(input)), formatToVal(input, ser.hexToString(input) ));
+
+    // FIXME
+    // Date (HexTo) throws 'Invalid time value' sometimes.
+    // Reproduce with 0x74657374696e67737472696e67
+    var d = "";
+    var outputd = new Date();
+    var gotd;
+    try {
+        d = new Date(input) || true;
+    } catch (err) {
+        // noop
+    }
+    try {
+        gotd = ser.hexToDate(input);
+    } catch {
+        // noop
+    }
+    if (typeof gotd != undefined) {
+        gotd = new Date();
+    }
+    console.log(offset(o), formatConversionLabel("0x:Date  "), formatToHex(input, ser.dateToHex(d)), formatToVal(input, outputd.toISOString() ));
 }
 
 var foo = function(input, flags) {
     var len = basenameLen();
+    for (var i = 0; i < Object.keys( cli.flags ).length; i++) {
+        if (cli.flags[Object.keys(cli.flags)[i]]) {
+            len += 3;
+        }
+    }
     for (var i = 0; i < input.length; i++) {
         if (i > 0) {
             len += input[i - 1].length + 1;
         }
         handleInputHex(len, input[i]);
     }
+    console.log();
 };
 
 foo(cli.input, cli.flags);
