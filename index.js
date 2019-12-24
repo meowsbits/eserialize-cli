@@ -13,19 +13,16 @@ const cli = meow(`
 
     Examples
 
-    $ eserialize-cli 0xdeadbeef 61
-                    |
-                     0xdeadbeef
-                     0x:number 0xdeadbeef 3735928559
-                     0x:string 0x30786465616462656566 ޭ��
-                     0x:date   0xNaN 2088-05-20T21:55:59.000Z
+    $ eserialize-cli 0xdeadbeef 42
+                     |
+                     0x:Number 0xdeadbeef 3735928559
+                     0x:String 0x30786465616462656566 ޭ��
+                     0x:Date   0xNaN 2088-05-20T21:55:59.000Z
 
-                               | 
-                                61
-                                0x:number 0x3d 97
-                                0x:string 0x3631 
-                                0x:date   0x-10ed1e20 1970-01-01T00:01:37.000Z
-
+                                |
+                                0x:Number 0x2a 66
+                                0x:String 0x3432
+                                0x:Date   0x876e8b60 1970-01-01T00:01:06.000Z
 `, {
     flags: {
         rainbow: {
@@ -51,14 +48,10 @@ var formatConversionLabel = function(label) {
 }
 
 var handleInputHex = function(o, input) {
-    // console.log(process.argv0, process.argv[0], process.argv[1], process.argv[2]);
-    o += 2;
-    console.log(offset(o), "|");
-    // console.log(offset(o), input);
+    o += 2; // space + index0
     console.log(offset(o), formatConversionLabel("0x:Number"), ser.numberToHex(+input), ser.hexToNumber(input));
     console.log(offset(o), formatConversionLabel("0x:String"), ser.stringToHex(input), ser.hexToString(input));
     console.log(offset(o), formatConversionLabel("0x:Date  "), ser.dateToHex(new Date(input)), ser.hexToDate(input).toISOString());
-    console.log();
 }
 
 var foo = function(input, flags) {
