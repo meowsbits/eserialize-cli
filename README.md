@@ -4,7 +4,7 @@ CLI interface for Ethereum serialization.
 
 ## Install
 
-__NPM__
+__NPM__ :construction:
 
 ```
 npm install -g @etclabscore/eserialize-cli
