@@ -35,7 +35,7 @@ which means that a serialized value must begin with `0x` or `00` and contain onl
 ```
 > eserialize-cli 0x3d
 number = 61
-string = =
+string = [invalid]
 date = Wed Dec 31 1969 18:01:01 GMT-0600 (Central Standard Time)
 
 > eserialize-cli 1337
@@ -53,7 +53,7 @@ date = Wed Dec 31 1969 18:01:01 GMT-0600 (Central Standard Time)
 ```
 > echo 0x3df | eserialize-cli 
 number = 991
-string = =
+string = [invalid]
 date = Wed Dec 31 1969 18:16:31 GMT-0600 (Central Standard Time)
 
 > echo 1337 | eserialize-cli 
@@ -72,7 +72,7 @@ date = Wed Dec 31 1969 18:16:31 GMT-0600 (Central Standard Time)
 > eserialize-cli 
 0x3df
 number = 991
-string = =
+string = [invalid]
 date = Wed Dec 31 1969 18:16:31 GMT-0600 (Central Standard Time)
 
 1337

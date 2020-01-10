@@ -79,6 +79,9 @@ var printDeserialized = function(input) {
     printPrettyKeyValue("number", num);
 
     var str = ser.hexToString(input);
+    if (str == "=") {
+        str = "[invalid]";
+    }
     printPrettyKeyValue("string", str);
 
     var dat = ser.hexToDate(input);
