@@ -23,7 +23,7 @@ __From source__
 ## Usage
 
 This program deserializes a serialized value, and vice versa.
-The regular expression for this checking if a given value is serialized is `/^(0x|00)[a-f0-9]+$/im`, 
+The regular expression for checking if a given value is serialized is `/^(0x|00)[a-f0-9]+$/im`, 
 which means that a serialized value must begin with `0x` or `00` and contain only valid hexadecimal characters (0-9, a-f) thereafter, case insensitive.
 
 ### Flags
