@@ -10,25 +10,43 @@ const ser = require('@etclabscore/eserialize');
 const cli = meow(`
     The eserialize CLI reads from stdin and either serializes or deserializes input.
 
-    Usage
+    Usage:
+    
       $ eserialize <input>
+    
+    Flags:
+    
+      -n  Do not colorize output.
+      -s  Silence conversion format names (output values only).
+    
+    Basic examples:
 
-    Examples
+        $ eserialize-cli 0xdeadbeef
+        number = 3735928559
+        string = ޭ��
+        date = Thu May 20 2088 16:55:59 GMT-0500 (Central Daylight Time)
+        
+        $ eserialize-cli 1337
+        (number) = 0x539
+        
+        $ eserialize-cli "my special note"
+        (string) = 0x6d79207370656369616c206e6f7465
 
-    $ eserialize-cli 0xdeadbeef
+    Flag examples:
 
-    $ eserialize-cli "my special note"
-
-    $ echo 42 | eserialize-cli
-
-    $ eserialize-cli
-    42
-    (number) = 0x2a
+        $ eserialize-cli -s 0xdeadbeef
+        3735928559
+        ��
+        Thu May 20 2088 16:55:59 GMT-0500 (Central Daylight Time)
 `, {
     flags: {
         nocolor: {
             type: 'boolean',
             alias: 'n'
+        },
+        silenceFormats: {
+            type: 'boolean',
+            alias: 's'
         }
     }
 });
@@ -40,23 +58,31 @@ var isSerialializedFormat = function(input) {
     return (regHex.test(input));
 };
 
-var stdOutPrettyKeyValue = function(k, v) {
-    if (!cli.flags.nocolor) {
-        console.log(chalk.magenta(k), "=", chalk.cyan(v));
+var printPrettyKeyValue = function(k, v) {
+    if (cli.flags.silenceFormats) {
+        if (cli.flags.nocolor) {
+            console.log(v);
+        } else {
+            console.log(chalk.cyan(v));
+        }
     } else {
-        console.log(k, "=", v);
+        if (cli.flags.nocolor) {
+            console.log(k, "=", v);
+        } else {
+            console.log(chalk.magenta(k), "=", chalk.cyan(v));
+        }
     }
 };
 
-var deserialize = function(input) {
+var printDeserialized = function(input) {
     var num = ser.hexToNumber(input);
-    stdOutPrettyKeyValue("number", num);
+    printPrettyKeyValue("number", num);
 
     var str = ser.hexToString(input);
-    stdOutPrettyKeyValue("string", str);
+    printPrettyKeyValue("string", str);
 
     var dat = ser.hexToDate(input);
-    stdOutPrettyKeyValue("date", dat);
+    printPrettyKeyValue("date", dat);
 };
 
 var isDateFormat = function(input) {
@@ -73,7 +99,7 @@ var handleInput = function(input) {
 
     // If appears serialized, deserialize it.
     if (isSerialializedFormat(input)) {
-        deserialize(input);
+        printDeserialized(input);
         return;
     }
 
@@ -81,19 +107,19 @@ var handleInput = function(input) {
 
     // Number.
     if (regNumber.test(input)) {
-        stdOutPrettyKeyValue("(number)", ser.numberToHex(+input));
+        printPrettyKeyValue("(number)", ser.numberToHex(+input));
         return;
     }
 
     // Date.
     if (isDateFormat(input)) {
         var d = new Date(input);
-        stdOutPrettyKeyValue("(date)", ser.dateToHex(d));
+        printPrettyKeyValue("(date)", ser.dateToHex(d));
         return;
     }
 
     // String.
-    stdOutPrettyKeyValue("(string)", ser.stringToHex(input));
+    printPrettyKeyValue("(string)", ser.stringToHex(input));
 };
 
 var run = function(input, flags) {
@@ -107,7 +133,12 @@ var run = function(input, flags) {
     // No args were passed; read from stdin.
     // This will either read line-by-line from TTY stdin in an interactive way,
     // or, if stdin is piped, it will read that and then exit.
-    process.stdin.pipe(require('split')()).on('data', handleInput);
+    process.stdin.pipe(require('split')()).on('data', function(data) {
+        handleInput(data);
+
+        // Append newline so there's a little room to breathe between conversions.
+        console.log();
+    });
 };
 
 run(cli.input, cli.flags);
